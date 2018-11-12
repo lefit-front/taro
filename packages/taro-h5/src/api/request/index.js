@@ -21,11 +21,13 @@ export default function request (options) {
   const params = {}
   const res = {}
   if (options.jsonp) {
+    Object.assign(params, options)
     params.params = options.data
     params.cache = options.jsonpCache
     if (typeof options.jsonp === 'string') {
       params.name = options.jsonp
     }
+    delete params.jsonp
     return jsonpRetry(url, params)
       .then(data => {
         res.statusCode = 200
@@ -47,9 +49,9 @@ export default function request (options) {
     url = generateRequestUrlWithParams(url, options.data)
   } else if (typeof options.data === 'object') {
     let contentType = options.header && (options.header['Content-Type'] || options.header['content-type'])
-    if (contentType === 'application/json') {
+    if (contentType && contentType.indexOf('application/json') >= 0) {
       params.body = JSON.stringify(options.data)
-    } else if (contentType === 'application/x-www-form-urlencoded') {
+    } else if (contentType && contentType.indexOf('application/x-www-form-urlencoded') >= 0) {
       params.body = serializeParams(options.data)
     } else {
       params.body = options.data

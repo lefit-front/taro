@@ -12,40 +12,19 @@
 
 **Taro** 是一套遵循 [React](https://reactjs.org/) 语法规范的 **多端开发** 解决方案。现如今市面上端的形态多种多样，Web、React-Native、微信小程序等各种端大行其道，当业务要求同时在不同的端都要求有所表现的时候，针对不同的端去编写多套代码的成本显然非常高，这时候只编写一套代码就能够适配到多端的能力就显得极为需要。
 
-使用 **Taro**，我们可以只书写一套代码，再通过 **Taro** 的编译工具，将源代码分别编译出可以在不同端（微信小程序、H5、React-Native 等）运行的代码。
+使用 **Taro**，我们可以只书写一套代码，再通过 **Taro** 的编译工具，将源代码分别编译出可以在不同端（微信/百度/支付宝小程序、H5、React-Native 等）运行的代码。
+
+## 学习资源
+
+[awesome-taro](https://github.com/NervJS/awesome-taro)
 
 ## 使用案例
 
 Taro 已经投入了我们的生产环境中使用，业界也在广泛地使用 Taro 开发多端应用。
 
-![案例](https://i.loli.net/2018/09/21/5ba4944f67b49.jpg)
+![案例](https://i.loli.net/2018/10/24/5bcfe16f1b7c7.png)
 
 [征集更多优秀案例](https://github.com/NervJS/taro/issues/244)
-
-## 示例项目
-
-* Taro Redux 示例 [taro-redux-sample](https://github.com/NervJS/taro-redux-sample)
-* [TodoMVC](https://github.com/NervJS/TodoMVC)
-* Taro 组件库示例 [taro-components-sample](https://github.com/NervJS/taro-components-sample)
-* Taro 端能力示例 [taro-apis-sample](https://github.com/NervJS/taro-apis-sample)
-* Taro 实验性特性项目 [taro-todo](https://github.com/NervJS/taro-todo)
-* [仿知乎小程序](https://github.com/NervJS/taro-zhihu-sample)
-* [Taro整合Dva示例](https://github.com/zuoge85/taro-dva)
-* [V2ex小程序（TypeScript）](https://github.com/NervJS/taro-v2ex)
-* [与微信小程序原生融合的示例](https://github.com/NervJS/taro-sample-weapp)
-
-## 文章教程
-
-* [【小程序taro最佳实践】http请求封装（方便使用，增加token，统一错误日志记录和上报）](https://segmentfault.com/a/1190000016533592)
-* [【小程序taro 最佳实践】异步action优雅实践(简化流程)](https://segmentfault.com/a/1190000016534001)
-* [使用Taro框架开发小程序](https://juejin.im/post/5ba0a53af265da0ab5037234)
-* [Taro下利用Decorator快速实现小程序分享](https://juejin.im/post/5b99da5d5188255c6f1e084e)
-* [微信小程序授权登陆方案以及在Taro下利用Decorator修饰器实现](https://juejin.im/post/5b97a762e51d450e9649a8fd)
-* [试用React语法的多端框架Taro问题汇总](https://segmentfault.com/a/1190000016247153)
-* [Taro 在京东购物小程序上的实践](https://juejin.im/entry/5b987859e51d450ea2465ddd)
-* [Taro实践 - TOPLIFE小程序 开发体验](https://juejin.im/post/5b3b786a6fb9a04f89780a9f)
-* [Taro 技术揭秘：taro-cli](https://juejin.im/post/5b3ce041e51d45194832aaf6)
-* [为何我们要用 React 来写小程序 - Taro 诞生记](https://juejin.im/post/5b30b476518825749e4a1d91)
 
 ## Taro 特性
 
@@ -118,7 +97,7 @@ Taro 立足于微信小程序开发，众所周知小程序的开发体验并不
 
 #### 支持多端开发转化
 
-Taro 方案的初心就是为了打造一个多端开发的解决方案。目前 Taro 代码可以支持转换到 **微信小程序** 以及 **H5 端**。
+Taro 方案的初心就是为了打造一个多端开发的解决方案。目前 Taro 代码可以支持转换到 **微信/百度/支付宝小程序** 、 **H5 端** 以及 **移动端（React-Native）**。
 
 <div align="center"><img src="http://ww1.sinaimg.cn/large/49320207gy1fr21yeoexvj20hw0tu0vg.jpg" width="320"/><br><span style="font-size: 12px; color: #999;">微信小程序</span></div>
 
@@ -148,20 +127,67 @@ npm5.2+ 也可在不全局安装的情况下使用 npx 创建模板项目
 $ npx @tarojs/cli init myApp
 ```
 
-进入项目目录开始开发，可以选择小程序预览模式，或者 H5 预览模式。若使用微信小程序预览模式，则需要自行下载并打开[微信开发者工具](https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html)，选择预览项目根目录。
+进入项目目录开始开发，目前已经支持 微信/百度/支付宝小程序、H5 以及 ReactNative 等端的代码转换，针对不同端的启动以及预览、打包方式并不一致
 
-微信小程序编译预览模式
+### 微信小程序
+
+选择微信小程序模式，需要自行下载并打开[微信开发者工具](https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html)，然后选择项目根目录进行预览。
+
+微信小程序编译预览及打包（去掉 --watch 经不会监听文件修改，并会对代码进行压缩打包）
 
 ```bash
 # npm script
 $ npm run dev:weapp
+$ npm run build:weapp
 # 仅限全局安装
 $ taro build --type weapp --watch
+$ taro build --type weapp
 # npx 用户也可以使用
 $ npx taro build --type weapp --watch
+$ npx taro build --type weapp
 ```
 
-H5 编译预览模式
+### 百度小程序
+
+选择百度小程序模式，需要自行下载并打开[百度开发者工具](https://smartprogram.baidu.com/docs/develop/devtools/show_sur/)，然后在项目编译完后选择项目根目录下 `dist` 目录进行预览。
+
+百度小程序编译预览及打包（去掉 --watch 经不会监听文件修改，并会对代码进行压缩打包）
+
+```bash
+# npm script
+$ npm run dev:swan
+$ npm run build:swan
+# 仅限全局安装
+$ taro build --type swan --watch
+$ taro build --type swan
+# npx 用户也可以使用
+$ npx taro build --type swan --watch
+$ npx taro build --type swan
+```
+
+### 支付宝小程序
+
+选择支付宝小程序模式，需要自行下载并打开[支付宝小程序开发者工具](https://docs.alipay.com/mini/developer/getting-started/)，然后在项目编译完后选择项目根目录下 `dist` 目录进行预览。
+
+支付宝小程序编译预览及打包（去掉 --watch 经不会监听文件修改，并会对代码进行压缩打包）
+
+```bash
+# npm script
+$ npm run dev:alipay
+$ npm run build:alipay
+# 仅限全局安装
+$ taro build --type alipay --watch
+$ taro build --type alipay
+# npx 用户也可以使用
+$ npx taro build --type alipay --watch
+$ npx taro build --type alipay
+```
+
+### H5
+
+H5 模式，无需特定的开发者工具，在执行完下述命令之后即可通过浏览器进行预览
+
+H5 预览项目
 
 ```bash
 # npm script
@@ -172,19 +198,7 @@ $ taro build --type h5 --watch
 $ npx taro build --type h5 --watch
 ```
 
-## 项目打包
-打包小程序代码
-
-```bash
-# npm script
-$ npm run build:weapp
-# 仅限全局安装
-$ taro build --type weapp
-# npx 用户也可以使用
-$ npx taro build --type weapp
-```
-
-打包 H5 代码
+H5 打包项目
 
 ```bash
 # npm script
@@ -193,6 +207,19 @@ $ npm run build:h5
 $ taro build --type h5
 # npx 用户也可以使用
 $ npx taro build --type h5
+```
+
+### React Native
+
+React Native 端运行需执行如下命令，React Native 端相关的运行说明请参见 [React Native 教程](https://nervjs.github.io/taro/docs/react-native.html)
+
+```bash
+# npm script
+$ npm run dev:rn
+# 仅限全局安装
+$ taro build --type rn --watch
+# npx 用户也可以使用
+$ npx taro build --type rn --watch
 ```
 
 ## 开发计划

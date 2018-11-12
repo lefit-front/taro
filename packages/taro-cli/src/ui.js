@@ -3,6 +3,7 @@ const path = require('path')
 const chalk = require('chalk')
 const wxTransformer = require('@tarojs/transformer-wx')
 const traverse = require('babel-traverse').default
+const t = require('babel-types')
 const _ = require('lodash')
 
 const CONFIG = require('./config')
@@ -58,6 +59,7 @@ function parseEntryAst (ast) {
   const styleFiles = []
   const components = []
   const importExportName = []
+  let exportDefaultName = null
 
   traverse(ast, {
     ExportNamedDeclaration (astPath) {
@@ -80,6 +82,14 @@ function parseEntryAst (ast) {
       }
     },
 
+    ExportDefaultDeclaration (astPath) {
+      const node = astPath.node
+      const declaration = node.declaration
+      if (t.isIdentifier(declaration)) {
+        exportDefaultName = declaration.name
+      }
+    },
+
     Program: {
       exit (astPath) {
         astPath.traverse({
@@ -95,18 +105,31 @@ function parseEntryAst (ast) {
                 styleFiles.push(stylePath)
               }
               astPath.remove()
-            } else if (importExportName.length) {
-              importExportName.forEach(nameItem => {
+            } else {
+              if (importExportName.length) {
+                importExportName.forEach(nameItem => {
+                  specifiers.forEach(specifier => {
+                    const local = specifier.local
+                    if (local.name === nameItem) {
+                      components.push({
+                        name: local.name,
+                        path: resolveScriptPath(path.resolve(path.dirname(entryFilePath), source.value))
+                      })
+                    }
+                  })
+                })
+              }
+              if (exportDefaultName != null) {
                 specifiers.forEach(specifier => {
                   const local = specifier.local
-                  if (local.name === nameItem) {
+                  if (local.name === exportDefaultName) {
                     components.push({
                       name: local.name,
                       path: resolveScriptPath(path.resolve(path.dirname(entryFilePath), source.value))
                     })
                   }
                 })
-              })
+              }
             }
           }
         })
@@ -217,7 +240,7 @@ function analyzeStyleFilesImport (styleFiles) {
 
 async function buildForWeapp () {
   console.log()
-  console.log(chalk.green('开始编译微信小程序端组件库！'))
+  console.log(chalk.green('开始编译小程序端组件库！'))
   if (!fs.existsSync(entryFilePath)) {
     console.log(chalk.red('入口文件不存在，请检查！'))
     return
@@ -226,7 +249,7 @@ async function buildForWeapp () {
     const { compileDepStyles } = require('./weapp')
     const outputDir = path.join(appPath, outputDirName, weappOutputName)
     const outputEntryFilePath = path.join(outputDir, entryFileName)
-    const code = fs.readFileSync(entryFilePath)
+    const code = fs.readFileSync(entryFilePath).toString()
     const transformResult = wxTransformer({
       code,
       sourcePath: entryFilePath,
@@ -275,10 +298,10 @@ async function buildForH5 (buildConfig) {
 
 function buildEntry () {
   const content = `if (process.env.TARO_ENV === '${BUILD_TYPES.H5}') {
-    module.exports = require('./${h5OutputName}/index.js')
+    module.exports = require('./${h5OutputName}/index')
     module.exports.default = module.exports
-  } else if (process.env.TARO_ENV === '${BUILD_TYPES.WEAPP}') {
-    module.exports = require('./${weappOutputName}/index.js')
+  } else {
+    module.exports = require('./${weappOutputName}/index')
     module.exports.default = module.exports
   }`
   const outputDir = path.join(appPath, outputDirName)

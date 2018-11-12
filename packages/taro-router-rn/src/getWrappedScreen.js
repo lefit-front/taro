@@ -11,7 +11,7 @@ import { getNavigationOptions } from './utils'
  * @param globalNavigationOptions 全局
  * @returns {WrappedScreen}
  */
-function getWrappedScreen (Screen, Taro, globalNavigationOptions) {
+function getWrappedScreen (Screen, Taro, globalNavigationOptions = {}) {
   class WrappedScreen extends React.Component {
     constructor (props, context) {
       super(props, context)
@@ -25,7 +25,7 @@ function getWrappedScreen (Screen, Taro, globalNavigationOptions) {
       return {
         ...rest,
         headerTitle: <View style={{flexDirection: 'row', alignItems: 'center'}}>
-          {navigation.getParam('isNavigationBarLoadingShow') && <LoadingView/>}
+          {navigation.getParam('isNavigationBarLoadingShow') && <LoadingView />}
           <Text style={{fontSize: 17, fontWeight: '600'}}>{title}</Text>
         </View>,
         headerTintColor: navigation.getParam('headerTintColor') || navigationOptions.headerTintColor || globalNavigationOptions.headerTintColor,
@@ -37,12 +37,12 @@ function getWrappedScreen (Screen, Taro, globalNavigationOptions) {
 
     /**
      * @description 如果 Screen 被包裹过（如：@connect），
-     * 需提供获取包裹前 Screen 实例的方法 getWrappedInstance 并暴露出被包裹组件的 navigationOptions
+     * 需提供获取包裹前 Screen 实例的方法 getWrappedInstance 并暴露出被包裹组件的 config
      * @returns {*}
      */
     getScreenInstance () {
       if (this.screenRef.current && this.screenRef.current.getWrappedInstance) {
-        return this.screenRef.current.getWrappedInstance()
+        return this.screenRef.current.getWrappedInstance() || {}
       } else {
         return this.screenRef.current || {}
       }
@@ -119,7 +119,7 @@ function getWrappedScreen (Screen, Taro, globalNavigationOptions) {
       Taro.showNavigationBarLoading = this.showNavigationBarLoading.bind(this)
       Taro.hideNavigationBarLoading = this.hideNavigationBarLoading.bind(this)
       this.getScreenInstance().componentDidShow && this.getScreenInstance().componentDidShow()
-      this.screenRef.current && this.setState({}) // TODO 不然 current 为null
+      this.screenRef.current && this.setState({}) // TODO 不然 current 为null ??
     }
 
     componentWillUnmount () {
@@ -128,22 +128,22 @@ function getWrappedScreen (Screen, Taro, globalNavigationOptions) {
 
     render () {
       const {globalEnablePullDownRefresh = false} = globalNavigationOptions
-      const navigationOptions = getNavigationOptions(Screen.config)
+      const {enablePullDownRefresh, disableScroll} = getNavigationOptions(Screen.config)
 
       // 页面配置优先级 > 全局配置
-      let isScreenEnablePullDownRefresh = navigationOptions.enablePullDownRefresh === undefined
-        ? globalEnablePullDownRefresh
-        : navigationOptions.enablePullDownRefresh
+      let isScreenEnablePullDownRefresh = enablePullDownRefresh === undefined ? globalEnablePullDownRefresh : enablePullDownRefresh
+      const screenInstance = this.getScreenInstance()
       return (
         <TaroProvider
           Taro={Taro}
           enablePullDownRefresh={isScreenEnablePullDownRefresh}
-          onPullDownRefresh={this.getScreenInstance().onPullDownRefresh}
-          onReachBottom={this.getScreenInstance().onReachBottom}
-          onScroll={this.getScreenInstance().onScroll}
+          disableScroll={disableScroll}
+          onPullDownRefresh={screenInstance.onPullDownRefresh}
+          onReachBottom={screenInstance.onReachBottom}
+          onScroll={screenInstance.onScroll}
           {...this.props}
         >
-          <Screen ref={this.screenRef} {...this.props}/>
+          <Screen ref={this.screenRef} {...this.props} />
         </TaroProvider>
       )
     }
